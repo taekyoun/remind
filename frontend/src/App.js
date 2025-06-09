@@ -9,7 +9,7 @@ function App() {
     const [message, setMessage] = useState('');
 
     useEffect(() => {
-        axios.get('http://localhost:8081/api/hello')
+        axios.get('/api/hello')
             .then(response => setMessage(response.data))
             .catch(error => console.error('Error fetching API:', error));
     }, []);
