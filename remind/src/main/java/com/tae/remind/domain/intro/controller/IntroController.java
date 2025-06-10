@@ -8,6 +8,6 @@ public class IntroController {
 
      @GetMapping("/api/hello")
     public String hello() {
-        return "Hello from Spring Boot!";
+        return "젠킨스 테스트";
     }
 }
