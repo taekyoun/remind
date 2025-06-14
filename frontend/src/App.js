@@ -22,6 +22,7 @@ function App() {
         <Route path="/about" element={<About />} />
       </Routes>
       <div>
+        <span>배포자동화테스트</span>
         <h1>Spring Boot API 연결 테스트</h1>
         <p>서버에서 가져온 메시지: {message}</p>
       </div>

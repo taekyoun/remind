@@ -8,6 +8,6 @@ public class IntroController {
 
      @GetMapping("/api/hello")
     public String hello() {
-        return "젠킨스 테스4";
+        return "배포 자동화 완료";
     }
 }
