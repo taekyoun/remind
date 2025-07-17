@@ -1,81 +1,91 @@
-import React, { useState } from 'react';
+import React, { useState,useContext } from 'react';
 import { Link, useLocation} from 'react-router-dom';
-import axios from 'axios';
-
-let menuList =[];
-try{
-    const {data} = await axios.get(`/api/menu/use`);
-    if(data) menuList =data;
-    console.log(menuList)
-  
-} catch (err){
-    console.log('메뉴정보를 가져오는데 실패하였습니다')
-}
-
-const findPageTitle = (menus, currentPath) => {
-    for (const menu of menus) {
-        if (menu.path === currentPath) {
-            return menu.name;
-        }
-        if (menu.subMenu) {
-            const foundTitle = findPageTitle(menu.subMenu, currentPath);
-            if (foundTitle) {
-                return foundTitle;
-            }
-        }
-    }
-    return null;
-};
+import styled from 'styled-components';
+import { MenuContext } from 'js/component/MenuContext';
 
 const PageTitle = () => {
-    const location = useLocation();
-    const currentPath = location.pathname;
-    // 현재 경로에 맞는 제목 찾기
-    const pageTitle = findPageTitle(menuList, currentPath) 
-    return <h1>{pageTitle}</h1>;
-};
-const MenuItem = ({ item }) => {
-    const [isOpen, setIsOpen] = useState(false);
-    const handleMouseEnter = () => setIsOpen(true);
-    const handleMouseLeave = () => setIsOpen(false);
-    return (
-       <div onMouseEnter={handleMouseEnter}  
-            onMouseLeave={handleMouseLeave}>
-            {item.subMenu ? (
-                <span>{item.name}</span>
-            ) : (
-                <Link to={item.path || '#'}>{item.name}</Link>
-            )}
-            {item.subMenu && isOpen && (
-                <ul>
-                    {item.subMenu.map((subItem, index) => (
-                        <li key={index}>
-                          <MenuItem key={index} item={subItem} />
-                        </li>
-                    ))}
-                </ul>
-            )}
-       </div>
-    );
-};
-const Menu = (props) => {
-    let viewMenuList =[];
-    if(menuList.length>0){
-        viewMenuList =props.sort ==='admin'?
-            menuList.filter(menu=>menu.path.startsWith('/admin')):
-            menuList.filter(menu=>!menu.path.startsWith('/admin'));
+  const menuList = useContext(MenuContext);
+  const location = useLocation();
+  const currentPath = location.pathname;
+
+  const findPageTitle = (menus, path) => {
+   
+    for (const menu of menus) {
+      if (menu.path === path) return menu.name;
+      if (menu.subMenu) {
+        const found = findPageTitle(menu.subMenu, path);
+        if (found) return found;
+      }
     }
-    return (
-        <ul className={props.menuClass} >
+    return null;
+  };
+
+  const pageTitle = findPageTitle(menuList, currentPath);
+
+  return <h1>{pageTitle || '페이지 제목 없음'}</h1>;
+};
+
+// const MenuItem = ({ item}) => {
+//   const [isOpen, setIsOpen] = useState(false);
+//   return (
+//     <div onMouseEnter={() => setIsOpen(true)} onMouseLeave={() => setIsOpen(false)}>
+//       {item.subMenu ? (
+//         <span>{item.name}</span>
+//       ) : (
+//         <MenuLink  to={item.path || '#'}>{item.name}</MenuLink >
+//       )}
+//       {item.subMenu && isOpen && (
+//         <ul>
+//           {item.subMenu.map((subItem, idx) => (
+//             <li key={idx}>
+//               <MenuItem item={subItem} />
+//             </li>
+//           ))}
+//         </ul>
+//       )}
+//     </div>
+//   );
+// };
+
+const Menu = ({ sort, menuClass }) => {
+    const menuList = useContext(MenuContext);
+    const viewMenuList = menuList.length > 0
+        ? sort === 'admin'
+        ? menuList.filter(menu => menu.path.startsWith('/admin'))
+        : menuList.filter(menu => !menu.path.startsWith('/admin'))
+        : [];
+
+    if(sort ==='admin'){
+        return (
+            <ul className={menuClass}>
             {viewMenuList.map((item, index) => (
                 <li key={index}>
-                    <MenuItem item={item} />
+                <MenuLink  to={item.path || '#'}>{item.name}</MenuLink >
                 </li>
             ))}
-        </ul>
-    );
-};
+            </ul>
+        );
+    }
+      return (
+            <ul className={menuClass}>
+            {viewMenuList.map((item, index) => (
+                <li key={index}>
+                <Link  to={item.path || '#'}>{item.name}</Link >
+                </li>
+            ))}
+            </ul>
+        );
 
+    };
 
+const MenuLink = styled(Link)`
+  color: white;
+  font-size: 16px;
+  text-decoration: none;
+
+  &:hover {
+    color: #ddd;
+  }
+`;
 
 export {Menu,PageTitle}

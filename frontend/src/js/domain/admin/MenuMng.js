@@ -41,11 +41,7 @@ const  MenuMng = () => {
   return (
     <div className='table_area' >
         <fieldset>
-            <label>
-              검색
-              <input type='text'/>
               <button onClick={openModal} className="open-modal-button">메뉴생성</button>
-            </label>
         </fieldset>
         <MenuTable error={error} loading={loading} data={data} onEdit={handleEdit}/>
         <CreateMenuModal modalIsOpen={modalIsOpen} setModalIsOpen={setModalIsOpen} editData={editData} />

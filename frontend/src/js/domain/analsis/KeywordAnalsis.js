@@ -1,69 +1,69 @@
-import React, {useState, useEffect,useMemo} from 'react';
+import React, {useState, useEffect,useMemo,useCallback,useRef} from 'react';
 import ReactDOM from 'react-dom'
 import axios from 'axios'
 import 'css/domain/analsis/KeywordAnalsis.css'
 import style from 'css/component/Modal.module.css'
-import {TextIpt,RadioIpt,SubmitBtn} from 'js/component/InputButton'
+import {RadioIpt,SubmitBtn,TextRefIpt} from 'js/component/InputButton'
 import {Loading,Error,Vacuum} from 'js/component/LoadingError'
 import {PieChart} from 'js/component/Chart'
 
 const KeywordAnalsis = () => {
     const [newsData, setNewsData] = useState(null);
-    const [keywordData, seKeywordtData] = useState(null);
+    const [keywordData, setKeywordtData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [search, setSearch] = useState('');
+    const search = useRef('');
     const [selectedOption, setSelectedOption] = useState('news');
 
-    const fetchData = async ()=>{
-        if(!search || search.trim().length===0)return;
+    const fetchData = useCallback(async (keyword)=>{
+        if (!keyword?.trim()) return;
         setError(null);
         setLoading(true);
         try{
             const response = await axios.get(`/api/keyword/${selectedOption}`,{
                 params:{
-                    keyword:search,
+                    keyword:keyword,
                     count: 100
                 }
             } );
             if(selectedOption==='news')setNewsData(response.data);
-            else if(selectedOption==='info')seKeywordtData(response.data);
+            else if(selectedOption==='info')setKeywordtData(response.data);
         } catch (err){
             setError(err);
         }
         finally{
             setLoading(false);
         }
-    };
+    },[selectedOption]);
+
     useEffect(()=>{
-        fetchData()
-    },[selectedOption])
+        fetchData(search.current.value)
+    },[fetchData])
 
     const memoizedNewsTable = useMemo(() => {
         if (newsData) {
-          return <NewsTable data={newsData} search={search} />;
+          return <NewsTable data={newsData} search={search.current.value} />;
         }
-    }, [newsData, search]);
+    }, [newsData]);
       
     const memoizedKeywordChart = useMemo(() => {
         if (keywordData) {
-          return <KeywordChart data={keywordData} search={search} />;
+          return <KeywordChart data={keywordData} search={search.current.value} />;
         }
-    }, [keywordData, search]);
+    }, [keywordData]);
 
     const handleOptionChange = (event) => {
         setSelectedOption(event.target.value);
     };
-    const handleSearchChange = (event) => {
-        setSearch(event.target.value);
-    };
+    
     const handelSubmit = (event) => {
         event.preventDefault();
-        fetchData();
+        fetchData(search.current.value);
     };
     const handleKeyDown =(event) =>{
         if(event.key==='Enter'){
-            fetchData();
+            console.log(111)
+            fetchData(search.current.value);
         }
     }
     const radioInfo =[
@@ -73,7 +73,7 @@ const KeywordAnalsis = () => {
     return (
         <div className='keywordAnalsis_body'>
             <div className='search_box'>
-                <TextIpt value={search} onChange={handleSearchChange} onKeyDown={handleKeyDown}/>
+                <TextRefIpt ref={search} onKeyDown={handleKeyDown}/>
                 <RadioIpt  radioList={radioInfo}/>
                 <SubmitBtn onClick={handelSubmit}/>
             </div>
@@ -136,7 +136,7 @@ const NewsTable = ({data,search})=>{
                 console.error("There was an error with the request:", error);
             });
         }
-    },[url,description])
+    },[url,description,isOpen,search])
   
     return (
         <React.Fragment>

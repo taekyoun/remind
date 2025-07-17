@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {forwardRef} from 'react'
 import style from 'css/component/InputButton.module.css'
 
 const TextIpt = ({value,title,onKeyDown,onChange}) =>{
@@ -16,6 +16,19 @@ const TextIpt = ({value,title,onKeyDown,onChange}) =>{
         </label>
     )
 }
+const TextRefIpt = forwardRef(({title, onKeyDown},ref) =>{
+    return (
+        <label>
+            {title}
+            <input 
+                className={style.search_input}
+                ref={ref}
+                placeholder='검색어를 입력하세요'
+                onKeyDown={onKeyDown}
+            />
+        </label>
+    )
+});
 const RadioIpt = ({radioList}) =>{
     return (
         <React.Fragment>
@@ -44,5 +57,5 @@ const SubmitBtn =({onClick}) =>{
 }
 
 export{
-    TextIpt,RadioIpt,SubmitBtn
+    TextIpt,RadioIpt,SubmitBtn,TextRefIpt
 }

@@ -2,22 +2,19 @@ import {lazy} from 'react';
 import { Route, Routes,useLocation} from 'react-router-dom';
 
 const KeywordAnalsis = lazy(() => import  ('js/domain/analsis/KeywordAnalsis'));
-const MapAnalsis = lazy(() => import  ('js/domain/analsis/MapAnalsis'));
 const MenuMng = lazy(() => import  ('js/domain/admin/MenuMng'));
 const CodingBoard = lazy(()=> import ('js/domain/board/CodingBoard'));
-
-const BasicPage = ()=>{
-    return (
-        <h1>기본페이지</h1>
-    )
-}
+const Board = lazy(()=> import ('js/domain/board/Board'));
+const Home = lazy(()=> import ('js/domain/Home'));
+const About = lazy(()=> import ('js/domain/About'));
 
 const componentMap = {
-    '/': BasicPage,
-    '/analsis/keywordAnalsis': KeywordAnalsis,
-    '/analsis/mapAnalsis': MapAnalsis,
+    '/': Home,
+    '/about':About,
+    '/news': KeywordAnalsis,
     '/board/coding': CodingBoard,
     '/admin/menuMng': MenuMng,
+    '/board': Board,
     // Add more mappings here
 };
 
